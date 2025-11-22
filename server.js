@@ -70,7 +70,7 @@ io.on('connection', (socket) => {
 
     // 2. Delete Specific Note
     socket.on('admin_delete_note', (id, password) => {
-        if (password !== ADMIN_PASSWORD) return; // Security check
+        if (password !== ADMIN_PASSWORD) return; // Security 
 
         // Filter out the note with the matching ID
         notes = notes.filter(note => note.id !== id);
@@ -79,7 +79,7 @@ io.on('connection', (socket) => {
         io.emit('update_wall', notes);
     });
 
-    // 3. Clear All Notes
+    // 3. Clear All confess
     socket.on('admin_clear_all', (password) => {
         if (password !== ADMIN_PASSWORD) return;
 

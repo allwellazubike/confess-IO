@@ -505,6 +505,9 @@
   .animate-pulse {
     animation: var(--animate-pulse);
   }
+  .cursor-pointer {
+    cursor: pointer;
+  }
   .resize {
     resize: both;
   }
@@ -1190,6 +1193,9 @@
   }
   .italic {
     font-style: italic;
+  }
+  .no-underline {
+    text-decoration-line: none;
   }
   .underline {
     text-decoration-line: underline;
