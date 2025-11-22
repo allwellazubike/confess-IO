@@ -61,43 +61,30 @@
     <main class="w-full max-w-[375px] flex flex-col items-center space-y-6">
 
         <!-- THE WHITE CARD -->
-        <div class="bg-white w-full rounded-[35px] p-6 pt-8 shadow-xl relative overflow-hidden">
+        <div class="bg-white w-full rounded-[35px] shadow-xl relative overflow-hidden flex flex-col min-h-[320px]">
             
             <!-- Header Section (Profile + Prompt) -->
-            <div class="flex items-center space-x-3 -mt-3 mb-4">
-                <!-- Profile Image -->
+            <!-- Updated: Added padding (p-6 pb-4) here specifically for the header content -->
+            <div class="flex items-center space-x-3 p-6 pb-4">
                 <div class="relative w-12 h-12 rounded-full bg-black">
-                    <!-- Placeholder for the user image shown in screenshot -->
-                    <!-- <img 
-                        src="https://images.unsplash.com/photo-1531123897727-8f129e1688ce?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80" 
-                        alt="Profile" 
-                        class="w-12 h-12 rounded-full border-2 border-white shadow-sm object-cover"
-                    > -->
+                    <!-- Placeholder used in your snippet -->
                 </div>
                 
-                <!-- User Info -->
+                <!-- User Info (YOUR CHANGES PRESERVED) -->
                 <div class="flex flex-col justify-center">
                     <p class="text-[13px] font-semibold text-gray-500 tracking-wide uppercase leading-tight">@FUTO_SOE</p>
                     <h1 class="text-[17px] font-black text-black leading-tight mt-0.5">send anonymous card</h1>
                 </div>
             </div>
 
-            <!-- Input Area -->
-            <div class="relative w-full mt-2">
-                <!-- The textarea itself -->
-                <textarea 
-                    class="w-full h-40 bg-transparent text-xl font-bold placeholder-gray-300/90 border-none outline-none resize-none leading-relaxed" 
-                    placeholder="do you believe in second chances?"
-                ></textarea>
 
-                <!-- The Dice Button (Bottom Right of input) -->
-                <button class="absolute bottom-2 right-0 dice-hover transition-transform active:scale-90 focus:outline-none group">
-                    <!-- Dice Graphic (SVG to match the 3D look perfectly) -->
-                    <!-- <div class="w-10 h-10 bg-gray-200/50 rounded-xl flex items-center justify-center backdrop-blur-sm group-hover:bg-gray-200/80 transition-colors">
-                        <div class="text-2xl">🎲</div>
-                    </div> -->
-                </button>
-            </div>
+           <!-- text area  -->
+            <div class="relative w-full grow bg-black/10 backdrop-blur-xl border-t border-gray-50/50">
+                 <textarea 
+                 class="w-full min-h-[50px] h-full bg-transparent text-xl font-bold placeholder-gray-400/60 border-none outline-none resize-none leading-relaxed p-6" 
+                 placeholder="do you believe in second chances?"
+                 ></textarea>
+</div>
 
         </div>
 
