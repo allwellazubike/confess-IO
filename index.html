@@ -18,36 +18,36 @@
     </style>
 </head>
 <!-- bg-gradient-to-b from-[#4ACDF5] via-[#508BF9] to-[#BC4AF8] -->
-<body class="bg-white min-h-screen flex flex-col items-center p-4 antialiased text-gray-900 selection:bg-pink-200 selection:text-pink-900">
+<body class="bg-white min-h-screen flex flex-col items-center p-4 antialiased text-gray-900 selection:bg-blue-200 selection:text-blue-900">
 
     <main class="w-full max-w-[375px] mt-10 flex flex-col px-3 min-h-screen">
 
         <!-- WHITE CARD -->
-        <div class="bg-white w-full border-b-black rounded-[28px] shadow-xl relative overflow-hidden flex flex-col min-h-[200px] mt-6">
-            
-            <div class="flex items-center space-x-3 p-4 pb-2">
-                <div class="relative w-10 h-10 rounded-full bg-white"></div>
-                <div class="flex flex-col justify-center">
-                    <p class="text-[12px] font-semibold text-gray-500 tracking-wide uppercase leading-tight">@FUTO_SOE</p>
-                    <h1 class="text-[15px] font-black text-black leading-tighter mt-0.5">send anonymous note</h1>
-                </div>
-            </div>
-
-            <!-- Input Area -->
-            <div class="relative w-full grow bg-black/10 backdrop-blur-xl border-t border-gray-50/50">
-                 <textarea 
-                 id="messageInput"
-                 maxlength="280"
-                 class="w-full grow min-h-[50px] h-full bg-transparent text-xl font-bold placeholder-gray-400/60 border-none outline-none resize-none leading-relaxed p-6" 
-                 placeholder="Type confessions"
-                 ></textarea>
-                 <!-- Character Counter -->
-                 <div class="absolute bottom-3 right-4 text-xs font-bold text-gray-500">
-                    <span id="charCount">0</span>/280
-                 </div>
-            </div>
-
+<div class="bg-white w-full rounded-[28px] shadow-2xl relative overflow-hidden flex flex-col min-h-[200px] mt-6 border-2 border-gray-200">
+    
+    <div class="flex items-center space-x-3 p-4 pb-2">
+        <div class="relative w-10 h-10 rounded-full bg-black"></div>
+        <div class="flex flex-col justify-center">
+            <p class="text-[12px] font-semibold text-gray-500 tracking-wide uppercase leading-tight">@FUTO_SOE</p>
+            <h1 class="text-[15px] font-black text-black leading-tighter mt-0.5">send anonymous note</h1>
         </div>
+    </div>
+
+    <!-- Input Area -->
+    <div class="relative w-full grow bg-gradient-to-br from-gray-50 to-gray-100 border-t-2 border-gray-200">
+         <textarea 
+         id="messageInput"
+         maxlength="280"
+         class="w-full grow min-h-[50px] h-full bg-transparent text-xl font-bold placeholder-gray-400/70 border-none outline-none resize-none leading-relaxed p-6" 
+         placeholder="Type confessions"
+         ></textarea>
+         <!-- Character Counter -->
+         <div class="absolute bottom-3 right-4 text-xs font-bold text-gray-500 bg-white px-2 py-1 rounded-full shadow-sm">
+            <span id="charCount">0</span>/280
+         </div>
+    </div>
+
+</div>
 
         <!-- Anonymous Q&A Label -->
         <div class="flex items-center justify-center space-x-2 opacity-90 mt-5">
