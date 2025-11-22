@@ -8,10 +8,10 @@ const io = new Server(server);
 
 const PORT = process.env.PORT || 3000;
 
-// Serve static files from current directory
+// Serve static files
 app.use(express.static(__dirname));
 
-// In-memory storage for notes
+// storage fpr notes
 let notes = [];
 
 // Pastel colors
@@ -46,7 +46,7 @@ io.on('connection', (socket) => {
             notes.shift();
         }
 
-        // Broadcast the updated list to ALL users
+        // Broadcast the updated list to all users
         io.emit('update_wall', notes);
     });
 
