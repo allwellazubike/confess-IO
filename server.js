@@ -44,7 +44,7 @@ io.on('connection', (socket) => {
         if (!text || text.trim() === '') return;
 
         const note = {
-            id: Date.now(), // This ID is crucial for deleting
+            id: Date.now(), // This ID for deleting
             text: text.trim(),
             gradient: headerGradients[Math.floor(Math.random() * headerGradients.length)],
             identity: generateIdentity(),
@@ -57,7 +57,7 @@ io.on('connection', (socket) => {
         io.emit('update_wall', notes);
     });
 
-    // --- NEW ADMIN EVENTS ---
+//    admin events 
 
     // 1. Handle Login
     socket.on('admin_login', (password) => {
@@ -75,11 +75,11 @@ io.on('connection', (socket) => {
         // Filter out the note with the matching ID
         notes = notes.filter(note => note.id !== id);
         
-        // Update EVERYONE (Public board + Admin panel)
+        // Update everyone (Public board + Admin panel)
         io.emit('update_wall', notes);
     });
 
-    // 3. Clear All confess
+    // 3. Clear all confess
     socket.on('admin_clear_all', (password) => {
         if (password !== ADMIN_PASSWORD) return;
 

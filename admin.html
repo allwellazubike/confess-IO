@@ -22,19 +22,19 @@
         <p id="loginMsg" class="text-center mt-4 text-sm font-medium"></p>
     </div>
 
-    <!-- DASHBOARD SECTION hidde by default -->
+    <!-- dashboard hidde by default -->
     <div id="dashboardSection" class="hidden w-full max-w-4xl">
         
         <!-- Header -->
         <div class="flex justify-between items-center mb-8 border-b border-gray-700 pb-6">
             <div>
                 <h1 class="text-3xl font-black">Admin Console</h1>
-                <p class="text-gray-400 text-sm">Manage content in real-time.</p>
+                <!-- <p class="text-gray-400 text-sm">Manage content in real-time.</p> -->
             </div>
             <div class="flex gap-3">
-                <a href="board.html" target="_blank" class="bg-gray-700 hover:bg-gray-600 px-4 py-2 rounded-lg text-sm font-medium">View Board</a>
+                <a href="board.html" target="_blank" class="bg-gray-700 hover:bg-gray-600 px-4 py-2 rounded-lg text-sm font-medium">Board</a>
                 <button id="clearAllBtn" class="bg-red-600 hover:bg-red-700 px-4 py-2 rounded-lg text-sm font-bold shadow-lg shadow-red-900/20">
-                    ⚠️ NUKE ALL MESSAGES
+                    ⚠️ NUKE NOTES
                 </button>
             </div>
         </div>
@@ -53,9 +53,9 @@
                 <div class="col-span-2 text-right">Action</div>
             </div>
             
-            <!-- Rows will be injected here -->
+            <!-- Rows here -->
             <div id="adminList" class="divide-y divide-gray-700">
-                <!-- Items go here -->
+                <!-- Items here -->
             </div>
         </div>
 
@@ -96,7 +96,7 @@
 
         // Dashboard
         
-        // 1. Listen for baord updates
+        // Listen for baord updates
         socket.on('init_wall', (notes) => {
             currentNotes = notes;
             renderAdminList(notes);
@@ -106,7 +106,7 @@
             renderAdminList(notes);
         });
 
-        // 2. Render List
+        // Render List
         function renderAdminList(notes) {
             adminList.innerHTML = '';
             

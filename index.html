@@ -17,7 +17,6 @@
         ::-webkit-scrollbar { width: 0px; background: transparent; }
     </style>
 </head>
-<!-- bg-gradient-to-b from-[#4ACDF5] via-[#508BF9] to-[#BC4AF8] -->
 <body class="bg-white min-h-screen flex flex-col items-center p-4 antialiased text-gray-900 selection:bg-blue-200 selection:text-blue-900">
 
     <main class="w-full max-w-[375px] mt-10 flex flex-col px-3 min-h-screen">
@@ -57,7 +56,7 @@
             <span class="text-black font-bold text-sm tracking-wide drop-shadow-sm">anonymous q&a</span>
         </div>
 
-         <!-- SEND Button -->
+         <!-- Send Button -->
         <button id="sendBtn" class="hidden w-full bg-black text-white font-bold text-[17px] py-4 mt-5 rounded-full shadow-2xl transform transition hover:scale-[1.02] active:scale-95">
             Send!
         </button>
@@ -129,7 +128,7 @@
         // Send on button click
         sendBtn.addEventListener('click', sendMessage);
 
-        // Send on Enter key (but Shift+Enter for new line)
+        // Send on Enter key 
         messageInput.addEventListener('keydown', function(e) {
             if(e.key === 'Enter' && !e.shiftKey) {
                 e.preventDefault();
