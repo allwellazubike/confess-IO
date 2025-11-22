@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ConfessIO Admin</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>body { font-family: 'Inter', sans-serif; }</style>
+</head>
+<body class="bg-gray-900 text-white min-h-screen flex flex-col items-center p-6">
+
+    <!-- LOGIN SECTION -->
+    <div id="loginSection" class="w-full max-w-sm mt-20 bg-gray-800 p-8 rounded-2xl shadow-2xl border border-gray-700">
+        <h1 class="text-2xl font-black mb-6 text-center text-red-500">🛑 RESTRICTED AREA</h1>
+        <input type="password" id="passwordInput" placeholder="Enter Admin Password" 
+            class="w-full bg-gray-900 border border-gray-700 rounded-lg p-4 mb-4 focus:outline-none focus:border-red-500 transition-colors">
+        <button id="loginBtn" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 rounded-lg transition-colors">
+            Unlock Dashboard
+        </button>
+        <p id="loginMsg" class="text-center mt-4 text-sm font-medium"></p>
+    </div>
+
+    <!-- DASHBOARD SECTION (Hidden initially) -->
+    <div id="dashboardSection" class="hidden w-full max-w-4xl">
+        
+        <!-- Header -->
+        <div class="flex justify-between items-center mb-8 border-b border-gray-700 pb-6">
+            <div>
+                <h1 class="text-3xl font-black">Admin Console</h1>
+                <p class="text-gray-400 text-sm">Manage content in real-time.</p>
+            </div>
+            <div class="flex gap-3">
+                <a href="board.html" target="_blank" class="bg-gray-700 hover:bg-gray-600 px-4 py-2 rounded-lg text-sm font-medium">View Board</a>
+                <button id="clearAllBtn" class="bg-red-600 hover:bg-red-700 px-4 py-2 rounded-lg text-sm font-bold shadow-lg shadow-red-900/20">
+                    ⚠️ NUKE ALL MESSAGES
+                </button>
+            </div>
+        </div>
+
+        <!-- Search Filter -->
+        <div class="mb-6">
+            <input type="text" id="filterInput" placeholder="Filter messages (e.g. 'bad word')" 
+                class="w-full bg-gray-800 border border-gray-700 rounded-xl p-4 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+        </div>
+
+        <!-- List Container -->
+        <div class="bg-gray-800 rounded-xl border border-gray-700 overflow-hidden">
+            <div class="grid grid-cols-12 bg-gray-900 p-4 text-xs font-bold text-gray-400 uppercase tracking-wider border-b border-gray-700">
+                <div class="col-span-2">ID / Time</div>
+                <div class="col-span-8">Content</div>
+                <div class="col-span-2 text-right">Action</div>
+            </div>
+            
+            <!-- Rows will be injected here -->
+            <div id="adminList" class="divide-y divide-gray-700">
+                <!-- Items go here -->
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        const socket = io();
+        
+        // Elements
+        const loginSection = document.getElementById('loginSection');
+        const dashboardSection = document.getElementById('dashboardSection');
+        const passwordInput = document.getElementById('passwordInput');
+        const loginBtn = document.getElementById('loginBtn');
+        const loginMsg = document.getElementById('loginMsg');
+        const adminList = document.getElementById('adminList');
+        const filterInput = document.getElementById('filterInput');
+        const clearAllBtn = document.getElementById('clearAllBtn');
+
+        let currentPassword = ""; // password var
+        let currentNotes = []; // notes var
+
+        // Login
+        loginBtn.addEventListener('click', () => {
+            const pwd = passwordInput.value;
+            socket.emit('admin_login', pwd);
+            currentPassword = pwd; // 
+        });
+
+        socket.on('admin_success', () => {
+            loginSection.classList.add('hidden');
+            dashboardSection.classList.remove('hidden');
+        });
+
+        socket.on('admin_fail', (msg) => {
+            loginMsg.textContent = msg;
+            loginMsg.className = "text-center mt-4 text-sm font-bold text-red-500";
+        });
+
+        // Dashboard
+        
+        // 1. Listen for baord updates
+        socket.on('init_wall', (notes) => {
+            currentNotes = notes;
+            renderAdminList(notes);
+        });
+        socket.on('update_wall', (notes) => {
+            currentNotes = notes;
+            renderAdminList(notes);
+        });
+
+        // 2. Render List
+        function renderAdminList(notes) {
+            adminList.innerHTML = '';
+            
+            // Filter 
+            const filterText = filterInput.value.toLowerCase();
+            const filteredNotes = notes.filter(n => n.text.toLowerCase().includes(filterText));
+
+            // Reverse to show newest first
+            [...filteredNotes].reverse().forEach(note => {
+                const row = document.createElement('div');
+                row.className = "grid grid-cols-12 p-4 items-center hover:bg-gray-700/50 transition-colors";
+                row.innerHTML = `
+                    <div class="col-span-2 text-xs text-gray-500 font-mono">
+                        ${new Date(note.timestamp).toLocaleTimeString()}
+                    </div>
+                    <div class="col-span-8 text-sm text-gray-200 font-medium break-words pr-4">
+                        ${note.text}
+                    </div>
+                    <div class="col-span-2 text-right">
+                        <button onclick="deleteNote(${note.id})" class="text-red-400 hover:text-white hover:bg-red-600 px-3 py-1 rounded text-xs font-bold transition-all">
+                            Delete
+                        </button>
+                    </div>
+                `;
+                adminList.appendChild(row);
+            });
+
+            if(notes.length === 0) {
+                adminList.innerHTML = `<div class="p-8 text-center text-gray-500 italic">No active confessions.</div>`;
+            }
+        }
+
+        // 3. Delete Action
+        window.deleteNote = function(id) {
+            if(confirm("Permanently delete this note?")) {
+                socket.emit('admin_delete_note', id, currentPassword);
+            }
+        }
+
+        // 4. Nuke chat
+        clearAllBtn.addEventListener('click', () => {
+            const doubleCheck = prompt("Type 'DELETE' to confirm wiping ALL messages.");
+            if(doubleCheck === "DELETE") {
+                socket.emit('admin_clear_all', currentPassword);
+            }
+        });
+
+        // 5. Filter Input 
+        filterInput.addEventListener('input', () => {
+            renderAdminList(currentNotes);
+        });
+
+    </script>
+</body>
+</html>
