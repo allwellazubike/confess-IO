@@ -6,7 +6,7 @@
     <title>NGL.link Clone</title>
     
     <!-- Tailwind CSS (Play CDN) -->
-   <link rel="stylesheet" href="./src/output.css">
+   <link rel="stylesheet" href="./output.css">
     
     <!-- Google Fonts: Inter (Matches the UI font perfectly) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -40,51 +40,31 @@
     </style>
 </head>
 
-<!-- 
-    =======================================================================
-    BACKGROUND COLOR CONFIGURATION
-    =======================================================================
-    To change the background color, edit the class below in the <body> tag:
-    
-    Current: bg-gradient-to-b from-[#22D3EE] via-[#3B82F6] to-[#A855F7]
-    
-    - 'from-[#...]' is the TOP color
-    - 'via-[#...]' is the MIDDLE color
-    - 'to-[#...]' is the BOTTOM color
-    
-    You can change these hex codes to whatever you want!
-    =======================================================================
--->
 <body class="bg-gradient-to-b from-[#4ACDF5] via-[#508BF9] to-[#BC4AF8] min-h-screen flex flex-col items-center justify-center p-4 antialiased text-gray-900 selection:bg-pink-200 selection:text-pink-900">
 
     <!-- Main Content Wrapper -->
     <main class="w-full max-w-[375px] flex flex-col items-center space-y-6">
 
         <!-- THE WHITE CARD -->
-        <div class="bg-white w-full rounded-[35px] shadow-xl relative overflow-hidden flex flex-col min-h-[320px]">
+        <div class="bg-white w-full rounded-[35px] shadow-xl relative overflow-hidden flex flex-col grow min-h-[270px]">
             
-            <!-- Header Section (Profile + Prompt) -->
-            <!-- Updated: Added padding (p-6 pb-4) here specifically for the header content -->
             <div class="flex items-center space-x-3 p-6 pb-4">
                 <div class="relative w-12 h-12 rounded-full bg-black">
-                    <!-- Placeholder used in your snippet -->
                 </div>
-                
-                <!-- User Info (YOUR CHANGES PRESERVED) -->
                 <div class="flex flex-col justify-center">
                     <p class="text-[13px] font-semibold text-gray-500 tracking-wide uppercase leading-tight">@FUTO_SOE</p>
-                    <h1 class="text-[17px] font-black text-black leading-tight mt-0.5">send anonymous card</h1>
+                    <h1 class="text-[17px] font-bold text-black leading-tight mt-0.5">send anonymous card</h1>
                 </div>
             </div>
 
 
            <!-- text area  -->
-            <div class="relative w-full grow bg-black/10 backdrop-blur-xl border-t border-gray-50/50">
+            <div class="relative w-full grow bg-transparent border-t border-gray-50/50">
                  <textarea 
                  class="w-full min-h-[50px] h-full bg-transparent text-xl font-bold placeholder-gray-400/60 border-none outline-none resize-none leading-relaxed p-6" 
                  placeholder="do you believe in second chances?"
                  ></textarea>
-</div>
+            </div>
 
         </div>
 
@@ -103,7 +83,7 @@
             <!-- "402 friends" Text with Emojis -->
             <div class="text-white font-bold text-[15px] flex items-center gap-1 drop-shadow-md animate-pulse">
                 <span>👇</span>
-                <span>402 friends just tapped the button</span>
+                <span>12 CM's just tapped the button</span>
                 <span>👇</span>
             </div>
 
