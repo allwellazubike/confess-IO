@@ -73,9 +73,13 @@
                 <span>👇</span>
             </div>
 
-            <a href="/board.html" class="w-full bg-black text-white font-bold text-[17px] py-4 rounded-full shadow-2xl transform transition hover:scale-[1.02] active:scale-95 flex justify-center items-center cursor-pointer no-underline">
-    View confession board
-</a>
+            <button id="getMessagesBtn" class="w-full bg-black text-white font-bold text-[17px] py-4 rounded-full shadow-2xl transform transition hover:scale-[1.02] active:scale-95">
+                View confession board
+            </button>
+
+            <!-- <a href="/board.html" class="w-full bg-black text-white font-bold text-[17px] py-4 rounded-full shadow-2xl transform transition hover:scale-[1.02] active:scale-95 flex justify-center items-center cursor-pointer no-underline">
+               View confession board
+            </a> -->
 
             <div class="flex space-x-4 mt-4">
                 <a href="#" class="text-white/60 font-medium text-md hover:text-white transition-colors">Allwell Azubike</a>
@@ -140,6 +144,8 @@
         getMessagesBtn.addEventListener('click', function() {
             window.location.href = 'board.html';
         });
+
+        
     </script>
  
 </body>
