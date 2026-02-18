@@ -1,169 +1,283 @@
-import React from "react";
-import { motion } from "framer-motion";
+import React, { useEffect, useRef, useState } from "react";
+import {
+  motion,
+  useScroll,
+  useTransform,
+  AnimatePresence,
+} from "framer-motion";
 import { useNavigate } from "react-router-dom";
-import { ArrowRight, Shield, Zap, Lock, MessageSquare } from "lucide-react";
+
+const CONFESSIONS = [
+  "I've never told anyone I'm afraid of silence.",
+  "I fake confidence every single day.",
+  "I miss people I was never supposed to love.",
+  "Sometimes I read old messages just to feel something.",
+  "I pretend to be fine. I'm not fine.",
+];
 
 const Home = () => {
   const navigate = useNavigate();
+  const heroRef = useRef(null);
+  const [confessionIdx, setConfessionIdx] = useState(0);
+  const [cursorPos, setCursorPos] = useState({ x: -100, y: -100 });
+
+  const { scrollY } = useScroll();
+  const heroOpacity = useTransform(scrollY, [0, 400], [1, 0]);
+  const heroY = useTransform(scrollY, [0, 400], [0, -80]);
 
   const createWall = () => {
     const uniqueId = Math.random().toString(36).substring(2, 9);
     navigate(`/board/${uniqueId}`);
   };
 
-  return (
-    <div className="min-h-screen bg-white text-black font-sans selection:bg-black selection:text-white">
-      {/* Navbar - Minimalist */}
-      <nav className="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-md border-b border-gray-100">
-        <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-black rounded-lg flex items-center justify-center text-white">
-              <MessageSquare size={18} fill="currentColor" />
-            </div>
-            <span className="text-xl font-bold tracking-tight">ConfessIO</span>
-          </div>
-          <button
-            onClick={createWall}
-            className="hidden md:flex bg-black text-white px-6 py-2.5 rounded-full font-medium text-sm hover:scale-105 transition-transform"
-          >
-            Start a Wall
-          </button>
-        </div>
-      </nav>
+  // Cycle confessions
+  useEffect(() => {
+    const id = setInterval(() => {
+      setConfessionIdx((i) => (i + 1) % CONFESSIONS.length);
+    }, 3200);
+    return () => clearInterval(id);
+  }, []);
 
-      <main className="pt-32 pb-20 px-6 max-w-7xl mx-auto">
-        {/* Hero Section */}
-        <section className="flex flex-col items-center text-center space-y-8 mb-32">
+  // Custom cursor
+  useEffect(() => {
+    const move = (e) => setCursorPos({ x: e.clientX, y: e.clientY });
+    window.addEventListener("mousemove", move);
+    return () => window.removeEventListener("mousemove", move);
+  }, []);
+
+  return (
+    <>
+      {/* Custom cursor */}
+      <div
+        className="cursor"
+        style={{ left: cursorPos.x - 6, top: cursorPos.y - 6 }}
+      />
+      <div
+        className="cursor-ring"
+        style={{ left: cursorPos.x - 20, top: cursorPos.y - 20 }}
+      />
+
+      <div className="noise">
+        {/* ── NAV ── */}
+        <motion.nav
+          className="nav"
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+        >
+          <div>
+            <div className="nav-logo">
+              Confess<span>IO</span>
+            </div>
+            <div className="nav-tag">Anonymous · Unfiltered · Secure</div>
+          </div>
+          <button className="nav-cta" onClick={createWall}>
+            Open a Wall
+          </button>
+        </motion.nav>
+
+        {/* ── HERO ── */}
+        <motion.section
+          className="hero"
+          ref={heroRef}
+          style={{ opacity: heroOpacity, y: heroY }}
+        >
+          <div className="hero-grid" />
+          <div className="hero-vignette" />
+
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gray-50 border border-gray-200 text-sm font-medium text-gray-600"
+            className="hero-eyebrow"
+            initial={{ opacity: 0, letterSpacing: "0.5em" }}
+            animate={{ opacity: 1, letterSpacing: "0.3em" }}
+            transition={{ duration: 1.2 }}
           >
-            <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
-            Global Anonymous Network
+            Anonymous Confessions
           </motion.div>
 
           <motion.h1
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.1 }}
-            className="text-6xl md:text-8xl lg:text-9xl font-bold tracking-tighter leading-[0.9]"
+            className="hero-title"
+            initial={{ opacity: 0, y: 60, skewY: 3 }}
+            animate={{ opacity: 1, y: 0, skewY: 0 }}
+            transition={{ duration: 1, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
           >
-            Truth.
+            Speak
             <br />
-            <span className="text-gray-400">Unfiltered.</span>
+            <em>without</em>
+            <br />
+            <span className="red">fear.</span>
           </motion.h1>
 
           <motion.p
-            initial={{ opacity: 0, y: 20 }}
+            className="hero-sub"
+            initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.2 }}
-            className="text-xl md:text-2xl text-gray-500 max-w-2xl font-light leading-relaxed"
+            transition={{ duration: 0.9, delay: 0.55 }}
           >
-            The simplest way to receive honest feedback and anonymous messages
-            from your friends.
+            Create a wall. Share the link. Receive unfiltered truth — completely
+            untraceable, beautifully raw.
           </motion.p>
 
-          <motion.button
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.5, delay: 0.4 }}
-            onClick={createWall}
-            className="group mt-8 bg-black text-white text-lg px-10 py-5 rounded-full font-bold flex items-center gap-3 hover:gap-5 transition-all shadow-xl hover:shadow-2xl"
-          >
-            Create Your Link
-            <ArrowRight className="w-5 h-5" />
-          </motion.button>
-        </section>
-
-        {/* Bento Grid Features */}
-        <section className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {/* Card 1 */}
           <motion.div
-            initial={{ opacity: 0, y: 40 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.1 }}
-            className="md:col-span-2 bg-gray-50 rounded-[2.5rem] p-10 flex flex-col justify-between border border-gray-100 hover:border-gray-200 transition-colors h-[400px]"
+            className="hero-actions"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.8 }}
           >
-            <div>
-              <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center mb-6 shadow-sm border border-gray-100">
-                <Shield className="w-6 h-6 text-black" />
-              </div>
-              <h3 className="text-3xl font-bold mb-4">Ironclad Privacy.</h3>
-              <p className="text-gray-500 text-lg max-w-md">
-                We don't track IP addresses. We don't require accounts. Your
-                anonymity is engineered into the core.
-              </p>
-            </div>
-            <div className="w-full h-8 bg-gray-200/50 rounded-full overflow-hidden mt-8">
-              <div className="w-2/3 h-full bg-black rounded-full" />
-            </div>
+            <button className="btn-primary" onClick={createWall}>
+              Create Your Wall →
+            </button>
+            <button className="btn-secondary">How it works</button>
           </motion.div>
 
-          {/* Card 2 */}
-          <motion.div
-            initial={{ opacity: 0, y: 40 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.2 }}
-            className="bg-black text-white rounded-[2.5rem] p-10 flex flex-col justify-between h-[400px]"
-          >
-            <div>
-              <Zap className="w-10 h-10 mb-6 text-yellow-400" />
-              <h3 className="text-3xl font-bold mb-2">Real-time.</h3>
-              <p className="text-gray-400">
-                Socket.io powered. Messages stream in instantly.
-              </p>
-            </div>
-            <div className="text-4xl font-bold tracking-tighter">0.05s</div>
-          </motion.div>
+          {/* Rotating confession ticker */}
+          <div className="confession-band">
+            <div className="confession-label">Live whispers</div>
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={confessionIdx}
+                className="confession-text"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                transition={{ duration: 0.6 }}
+              >
+                "{CONFESSIONS[confessionIdx]}"
+              </motion.div>
+            </AnimatePresence>
+          </div>
+        </motion.section>
 
-          {/* Card 3 */}
-          <motion.div
-            initial={{ opacity: 0, y: 40 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.3 }}
-            className="bg-white rounded-[2.5rem] p-10 flex flex-col justify-center border border-gray-200 h-[300px] shadow-sm"
-          >
-            <div className="flex items-center gap-4 mb-4">
-              <div className="w-3 h-3 bg-red-500 rounded-full" />
-              <div className="w-3 h-3 bg-yellow-500 rounded-full" />
-              <div className="w-3 h-3 bg-green-500 rounded-full" />
+        {/* ── STATS ── */}
+        <div className="divider" />
+        <motion.div
+          className="stats"
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.8, staggerChildren: 0.1 }}
+        >
+          {[
+            { val: "0ms", label: "Identity Stored" },
+            { val: "∞", label: "Truths Received" },
+            { val: "100%", label: "Untraceable" },
+          ].map((s) => (
+            <div className="stat" key={s.label}>
+              <div className="stat-value">{s.val}</div>
+              <div className="stat-label">{s.label}</div>
             </div>
-            <div className="space-y-3">
-              <div className="h-4 bg-gray-100 rounded w-3/4" />
-              <div className="h-4 bg-gray-100 rounded w-1/2" />
-            </div>
-            <h3 className="text-2xl font-bold mt-6">Simple by Design.</h3>
-          </motion.div>
+          ))}
+        </motion.div>
 
-          {/* Card 4 */}
-          <motion.div
-            initial={{ opacity: 0, y: 40 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.4 }}
-            className="md:col-span-2 bg-gradient-to-br from-gray-100 to-white rounded-[2.5rem] p-10 border border-gray-200 h-[300px] flex items-center justify-between"
-          >
-            <div>
-              <Lock className="w-10 h-10 mb-4 text-black" />
-              <h3 className="text-3xl font-bold">Secure Vault.</h3>
-              <p className="text-gray-500 mt-2">Your data belongs to you.</p>
+        {/* ── FEATURES ── */}
+        <div className="divider" />
+        <div style={{ maxWidth: 1200, margin: "0 auto" }}>
+          <div style={{ padding: "5rem 3rem 2rem" }}>
+            <div className="section-label">Why ConfessIO</div>
+            <div className="section-title">
+              Built for
+              <br />
+              <em
+                style={{
+                  fontFamily: "'Playfair Display', serif",
+                  fontStyle: "italic",
+                  color: "var(--red)",
+                }}
+              >
+                honest moments.
+              </em>
             </div>
-            <div className="text-9xl font-black text-gray-50 opacity-50 select-none">
-              KEY
-            </div>
-          </motion.div>
-        </section>
+          </div>
 
-        <footer className="mt-32 border-t border-gray-100 pt-10 text-center text-gray-400">
-          <p>&copy; {new Date().getFullYear()} ConfessIO. Established 2026.</p>
+          <motion.div
+            className="features"
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-100px" }}
+            variants={{ visible: { transition: { staggerChildren: 0.15 } } }}
+          >
+            {[
+              {
+                num: "01",
+                icon: "🕯️",
+                title: "Zero-Knowledge Privacy",
+                desc: "We architect anonymity, not bolt it on. No IP logs, no accounts, no fingerprinting. Your secret is architecturally impossible for us to uncover.",
+              },
+              {
+                num: "02",
+                icon: "⚡",
+                title: "Real-Time Delivery",
+                desc: "Socket.io powers every wall. Messages arrive in under 50ms — the intimacy of a whisper, the speed of lightning.",
+              },
+              {
+                num: "03",
+                icon: "🔐",
+                title: "Encrypted Vault",
+                desc: "End-to-end encryption wraps every message. Even our servers see only ciphertext. Your data belongs to you alone.",
+              },
+              {
+                num: "04",
+                icon: "🪞",
+                title: "Mirror of Truth",
+                desc: "People say things anonymously they'd never say face-to-face. Unlock honest feedback, unfiltered perspective, real connection.",
+              },
+            ].map((f) => (
+              <motion.div
+                key={f.num}
+                className="feature"
+                variants={{
+                  hidden: { opacity: 0, y: 30 },
+                  visible: {
+                    opacity: 1,
+                    y: 0,
+                    transition: { duration: 0.7, ease: [0.16, 1, 0.3, 1] },
+                  },
+                }}
+              >
+                <div className="feature-num">{f.num} ——</div>
+                <div className="feature-icon">{f.icon}</div>
+                <div className="feature-title">{f.title}</div>
+                <p className="feature-desc">{f.desc}</p>
+              </motion.div>
+            ))}
+          </motion.div>
+        </div>
+
+        {/* ── CTA BLOCK ── */}
+        <div className="divider" />
+        <motion.section
+          className="cta-block"
+          initial={{ opacity: 0, y: 60 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
+        >
+          <div className="cta-bg" />
+          <h2 className="cta-title">
+            The truth
+            <br />
+            is waiting
+            <br />
+            <em>for you.</em>
+          </h2>
+          <p className="cta-sub">
+            No sign-up. No traces. Just raw, honest connection.
+          </p>
+          <div className="cta-btn-wrap">
+            <button className="btn-primary" onClick={createWall}>
+              Start Your Wall — It's Free →
+            </button>
+          </div>
+        </motion.section>
+
+        {/* ── FOOTER ── */}
+        <footer className="footer">
+          <div className="footer-logo">ConfessIO</div>
+          <div className="footer-copy">
+            © {new Date().getFullYear()} — Anonymous. Always.
+          </div>
         </footer>
-      </main>
-    </div>
+      </div>
+    </>
   );
 };
 
