@@ -1,147 +1,169 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-import { Lock, Zap, EyeOff, ArrowRight, MessageSquare } from "lucide-react";
+import { ArrowRight, Shield, Zap, Lock, MessageSquare } from "lucide-react";
 
 const Home = () => {
   const navigate = useNavigate();
 
   const createWall = () => {
-    // Logic to create a unique wall ID - for now simulating
     const uniqueId = Math.random().toString(36).substring(2, 9);
     navigate(`/board/${uniqueId}`);
   };
 
   return (
-    <div className="min-h-screen bg-[#0f0f10] text-white overflow-hidden relative selection:bg-purple-500 selection:text-white">
-      {/* Background Gradients */}
-      <div className="absolute top-0 left-0 w-full h-full overflow-hidden z-0 pointer-events-none">
-        <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-purple-900/20 rounded-full blur-[120px]" />
-        <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-blue-900/20 rounded-full blur-[120px]" />
-        <div className="absolute top-[20%] left-[30%] w-[40%] h-[40%] bg-indigo-900/10 rounded-full blur-[100px] animate-pulse" />
-      </div>
-
-      {/* Navbar */}
-      <motion.nav
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8 }}
-        className="relative z-10 flex justify-between items-center px-8 py-6 w-full max-w-7xl mx-auto"
-      >
-        <div className="flex items-center gap-2">
-          <MessageSquare className="w-8 h-8 text-purple-500" />
-          <span className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-blue-500">
-            Echo Wall
-          </span>
-        </div>
-        <div>
+    <div className="min-h-screen bg-white text-black font-sans selection:bg-black selection:text-white">
+      {/* Navbar - Minimalist */}
+      <nav className="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-md border-b border-gray-100">
+        <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-8 bg-black rounded-lg flex items-center justify-center text-white">
+              <MessageSquare size={18} fill="currentColor" />
+            </div>
+            <span className="text-xl font-bold tracking-tight">ConfessIO</span>
+          </div>
           <button
             onClick={createWall}
-            className="px-6 py-2 rounded-full border border-white/10 hover:bg-white/5 transition-all text-sm font-medium backdrop-blur-sm"
+            className="hidden md:flex bg-black text-white px-6 py-2.5 rounded-full font-medium text-sm hover:scale-105 transition-transform"
           >
-            Create Wall
+            Start a Wall
           </button>
         </div>
-      </motion.nav>
+      </nav>
 
-      {/* Main Content */}
-      <main className="relative z-10 flex flex-col items-center justify-center text-center px-4 mt-20 md:mt-32 max-w-5xl mx-auto">
-        {/* Hero Badge */}
-        <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 0.2, duration: 0.5 }}
-          className="mb-8 px-4 py-1.5 rounded-full bg-white/5 border border-white/10 backdrop-blur-md flex items-center gap-2"
-        >
-          <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-          <span className="text-sm text-gray-400 font-medium">
-            Anonymous Messaging Evolved
-          </span>
-        </motion.div>
+      <main className="pt-32 pb-20 px-6 max-w-7xl mx-auto">
+        {/* Hero Section */}
+        <section className="flex flex-col items-center text-center space-y-8 mb-32">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gray-50 border border-gray-200 text-sm font-medium text-gray-600"
+          >
+            <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+            Global Anonymous Network
+          </motion.div>
 
-        {/* Hero Title */}
-        <motion.h1
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4, duration: 0.8 }}
-          className="text-5xl md:text-7xl lg:text-8xl font-bold tracking-tight mb-8"
-        >
-          Speak Your Truth, <br />
-          <span className="bg-clip-text text-transparent bg-gradient-to-r from-purple-400 via-pink-400 to-blue-500 animate-gradient-x">
-            Unapologetically.
-          </span>
-        </motion.h1>
+          <motion.h1
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.1 }}
+            className="text-6xl md:text-8xl lg:text-9xl font-bold tracking-tighter leading-[0.9]"
+          >
+            Truth.
+            <br />
+            <span className="text-gray-400">Unfiltered.</span>
+          </motion.h1>
 
-        {/* Hero Description */}
-        <motion.p
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.6, duration: 0.8 }}
-          className="text-lg md:text-xl text-gray-400 max-w-2xl mb-12 leading-relaxed"
-        >
-          Create a secure, anonymous space where friends and strangers can share
-          their honest thoughts. No logins. No tracking. Just pure expression.
-        </motion.p>
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+            className="text-xl md:text-2xl text-gray-500 max-w-2xl font-light leading-relaxed"
+          >
+            The simplest way to receive honest feedback and anonymous messages
+            from your friends.
+          </motion.p>
 
-        {/* CTA Button */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.8, duration: 0.8 }}
-        >
-          <button
+          <motion.button
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.5, delay: 0.4 }}
             onClick={createWall}
-            className="group relative px-8 py-4 bg-white text-black rounded-full font-bold text-lg flex items-center gap-3 hover:scale-105 transition-transform duration-300 shadow-[0_0_40px_-10px_rgba(255,255,255,0.3)]"
+            className="group mt-8 bg-black text-white text-lg px-10 py-5 rounded-full font-bold flex items-center gap-3 hover:gap-5 transition-all shadow-xl hover:shadow-2xl"
           >
-            Start Your Wall
-            <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-            <div className="absolute inset-0 rounded-full bg-white blur-lg opacity-20 group-hover:opacity-40 transition-opacity" />
-          </button>
-        </motion.div>
+            Create Your Link
+            <ArrowRight className="w-5 h-5" />
+          </motion.button>
+        </section>
 
-        {/* Feature Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-32 w-full px-4">
-          <FeatureCard
-            icon={<EyeOff className="w-8 h-8 text-pink-500" />}
-            title="Truly Anonymous"
-            description="We don't track IPs or require accounts. Your identity is generated as a fun random alias."
-            delay={1.0}
-          />
-          <FeatureCard
-            icon={<Lock className="w-8 h-8 text-purple-500" />}
-            title="Secure & Private"
-            description="Messages are encrypted in transit and only visible to those with your unique link."
-            delay={1.2}
-          />
-          <FeatureCard
-            icon={<Zap className="w-8 h-8 text-blue-500" />}
-            title="Real-Time"
-            description="See confessions appear instantly as they are typed. No refreshing needed."
-            delay={1.4}
-          />
-        </div>
+        {/* Bento Grid Features */}
+        <section className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {/* Card 1 */}
+          <motion.div
+            initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.1 }}
+            className="md:col-span-2 bg-gray-50 rounded-[2.5rem] p-10 flex flex-col justify-between border border-gray-100 hover:border-gray-200 transition-colors h-[400px]"
+          >
+            <div>
+              <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center mb-6 shadow-sm border border-gray-100">
+                <Shield className="w-6 h-6 text-black" />
+              </div>
+              <h3 className="text-3xl font-bold mb-4">Ironclad Privacy.</h3>
+              <p className="text-gray-500 text-lg max-w-md">
+                We don't track IP addresses. We don't require accounts. Your
+                anonymity is engineered into the core.
+              </p>
+            </div>
+            <div className="w-full h-8 bg-gray-200/50 rounded-full overflow-hidden mt-8">
+              <div className="w-2/3 h-full bg-black rounded-full" />
+            </div>
+          </motion.div>
+
+          {/* Card 2 */}
+          <motion.div
+            initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.2 }}
+            className="bg-black text-white rounded-[2.5rem] p-10 flex flex-col justify-between h-[400px]"
+          >
+            <div>
+              <Zap className="w-10 h-10 mb-6 text-yellow-400" />
+              <h3 className="text-3xl font-bold mb-2">Real-time.</h3>
+              <p className="text-gray-400">
+                Socket.io powered. Messages stream in instantly.
+              </p>
+            </div>
+            <div className="text-4xl font-bold tracking-tighter">0.05s</div>
+          </motion.div>
+
+          {/* Card 3 */}
+          <motion.div
+            initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.3 }}
+            className="bg-white rounded-[2.5rem] p-10 flex flex-col justify-center border border-gray-200 h-[300px] shadow-sm"
+          >
+            <div className="flex items-center gap-4 mb-4">
+              <div className="w-3 h-3 bg-red-500 rounded-full" />
+              <div className="w-3 h-3 bg-yellow-500 rounded-full" />
+              <div className="w-3 h-3 bg-green-500 rounded-full" />
+            </div>
+            <div className="space-y-3">
+              <div className="h-4 bg-gray-100 rounded w-3/4" />
+              <div className="h-4 bg-gray-100 rounded w-1/2" />
+            </div>
+            <h3 className="text-2xl font-bold mt-6">Simple by Design.</h3>
+          </motion.div>
+
+          {/* Card 4 */}
+          <motion.div
+            initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.4 }}
+            className="md:col-span-2 bg-gradient-to-br from-gray-100 to-white rounded-[2.5rem] p-10 border border-gray-200 h-[300px] flex items-center justify-between"
+          >
+            <div>
+              <Lock className="w-10 h-10 mb-4 text-black" />
+              <h3 className="text-3xl font-bold">Secure Vault.</h3>
+              <p className="text-gray-500 mt-2">Your data belongs to you.</p>
+            </div>
+            <div className="text-9xl font-black text-gray-50 opacity-50 select-none">
+              KEY
+            </div>
+          </motion.div>
+        </section>
+
+        <footer className="mt-32 border-t border-gray-100 pt-10 text-center text-gray-400">
+          <p>&copy; {new Date().getFullYear()} ConfessIO. Established 2026.</p>
+        </footer>
       </main>
-
-      {/* Footer */}
-      <footer className="mt-32 py-12 border-t border-white/5 text-center text-gray-500 text-sm">
-        <p>&copy; {new Date().getFullYear()} Echo Wall. All rights reserved.</p>
-      </footer>
     </div>
-  );
-};
-
-const FeatureCard = ({ icon, title, description, delay }) => {
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: delay, duration: 0.5 }}
-      className="p-8 rounded-3xl bg-white/5 border border-white/10 backdrop-blur-sm hover:bg-white/10 transition-colors text-left"
-    >
-      <div className="mb-4 p-3 rounded-2xl bg-white/5 w-fit">{icon}</div>
-      <h3 className="text-xl font-bold mb-3 text-white">{title}</h3>
-      <p className="text-gray-400 leading-relaxed">{description}</p>
-    </motion.div>
   );
 };
 
