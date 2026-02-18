@@ -189,7 +189,7 @@ body {
 }
 .hero-title {
   font-family: "Playfair Display", serif;
-  font-size: clamp(4rem, 12vw, 11rem);
+  font-size: clamp(5rem, 15vw, 13rem);
   font-weight: 900;
   line-height: 0.88;
   text-align: center;
