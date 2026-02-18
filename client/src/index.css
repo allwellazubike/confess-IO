@@ -520,4 +520,25 @@ body {
     text-align: center;
     padding: 1rem;
   }
+
+  /* Mobile Nav Fix */
+  .nav {
+    padding: 0 1rem;
+    height: 60px;
+  }
+  .nav-logo {
+    font-size: 1rem;
+  }
+  .nav-tag {
+    display: none;
+  } /* Hide tag line on mobile */
+
+  /* Live Whispers Fix */
+  .confession-band {
+    bottom: 1rem; /* Move up slightly */
+    padding: 0 1rem;
+  }
+  .confession-text {
+    font-size: 0.9rem; /* Smaller text */
+  }
 }
