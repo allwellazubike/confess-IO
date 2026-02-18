@@ -506,4 +506,18 @@ body {
     flex-direction: column;
     text-align: center;
   }
+
+  /* Hero Buttons Mobile Fix */
+  .hero-actions {
+    flex-direction: column;
+    gap: 1.5rem;
+    width: 100%;
+    max-width: 300px;
+  }
+  .btn-primary,
+  .btn-secondary {
+    width: 100%;
+    text-align: center;
+    padding: 1rem;
+  }
 }
