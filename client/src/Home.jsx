@@ -25,9 +25,17 @@ const Home = () => {
   const heroOpacity = useTransform(scrollY, [0, 400], [1, 0]);
   const heroY = useTransform(scrollY, [0, 400], [0, -80]);
 
-  const createWall = () => {
-    const uniqueId = Math.random().toString(36).substring(2, 9);
-    navigate(`/board/${uniqueId}`);
+  const createWall = async () => {
+    try {
+      // Use full URL for dev since no proxy is set up
+      const res = await fetch("http://localhost:4000/api/generate-id");
+      const data = await res.json();
+      navigate(`/board/${data.id}`);
+    } catch (error) {
+      console.error("Failed to generate ID", error);
+      const uniqueId = Math.random().toString(36).substring(2, 9);
+      navigate(`/board/${uniqueId}`);
+    }
   };
 
   // Cycle confessions
