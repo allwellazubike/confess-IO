@@ -8,10 +8,10 @@ const server = http.createServer(app);
 
 const PORT = process.env.PORT || 4000;
 
-// Enable CORS for development
+
 if (process.env.NODE_ENV !== "production") {
   const cors = require("cors");
-  app.use(cors()); // Allow all for dev
+  app.use(cors()); 
 }
 
 const io = new Server(server, {
