@@ -8,10 +8,9 @@ const server = http.createServer(app);
 
 const PORT = process.env.PORT || 4000;
 
-
 if (process.env.NODE_ENV !== "production") {
   const cors = require("cors");
-  app.use(cors()); 
+  app.use(cors());
 }
 
 const io = new Server(server, {
@@ -23,8 +22,28 @@ const io = new Server(server, {
 
 const ADMIN_PASSWORD = "admin123";
 
-// Store boards in memory: { "board-id": [notes...] }
-let boards = {};
+const db = require("./db");
+
+// Run cleanup every 10 minutes: Delete boards inactive for 24 hours
+setInterval(
+  async () => {
+    try {
+      await db.query(`
+      DELETE FROM confessions 
+      WHERE board_id IN (
+          SELECT board_id 
+          FROM confessions 
+          GROUP BY board_id 
+          HAVING MAX(created_at) < NOW() - INTERVAL '24 hours'
+      )
+    `);
+      console.log("Cleanup job ran");
+    } catch (err) {
+      console.error("Cleanup error:", err);
+    }
+  },
+  10 * 60 * 1000,
+);
 
 const headerGradients = [
   "from-[#4ACDF5] to-[#BC4AF8]",
@@ -65,19 +84,12 @@ function generateIdentity() {
   return `${adj} ${ani}`;
 }
 
-app.post("/api/get-confess", (req, res) => {
-  
-})
-
-
+app.post("/api/get-confess", (req, res) => {});
 
 // API: Generate unique Board ID
 app.get("/api/generate-id", (req, res) => {
   const uniqueId = Math.random().toString(36).substring(2, 9);
-  // Initialize empty board
-  if (!boards[uniqueId]) {
-    boards[uniqueId] = [];
-  }
+  // No need to initialize in DB, it's created on first post
   res.json({ id: uniqueId });
 });
 
@@ -85,35 +97,72 @@ io.on("connection", (socket) => {
   console.log("User connected:", socket.id);
 
   // Client joins a specific board
-  socket.on("join_board", (boardId) => {
+  socket.on("join_board", async (boardId) => {
     socket.join(boardId);
-    // Send existing notes for this board only
-    const boardNotes = boards[boardId] || [];
-    socket.emit("init_wall", boardNotes);
+    try {
+      const result = await db.query(
+        "SELECT * FROM confessions WHERE board_id = $1 ORDER BY created_at DESC LIMIT 200",
+        [boardId],
+      );
+      // Map DB rows to match client expectations if necessary (though columns match well)
+      // DB: id, board_id, text, gradient, identity, created_at
+      // Client expects: id, text, gradient, identity, timestamp (mapped from created_at)
+      const notes = result.rows.map((row) => ({
+        ...row,
+        timestamp: row.created_at,
+      }));
+      socket.emit("init_wall", notes);
+    } catch (err) {
+      console.error("Error fetching notes:", err);
+    }
   });
 
-  socket.on("new_confession", ({ boardId, text }) => {
+  socket.on("new_confession", async ({ boardId, text }) => {
     if (!text || !text.trim()) return;
     if (!boardId) return;
 
-    // Ensure board exists
-    if (!boards[boardId]) boards[boardId] = [];
+    const identity = generateIdentity();
+    const gradient =
+      headerGradients[Math.floor(Math.random() * headerGradients.length)];
 
-    const note = {
-      id: Date.now(),
-      text: text.trim(),
-      gradient:
-        headerGradients[Math.floor(Math.random() * headerGradients.length)],
-      identity: generateIdentity(),
-      timestamp: new Date().toISOString(),
-    };
+    try {
+      // 1. Insert new note
+      await db.query(
+        "INSERT INTO confessions (board_id, text, gradient, identity) VALUES ($1, $2, $3, $4)",
+        [boardId, text.trim(), gradient, identity],
+      );
 
-    boards[boardId].push(note);
-    console.log(note);
-    if (boards[boardId].length > 50) boards[boardId].shift(); 
+      // 2. Enforce 200 limit: Delete anything beyond the newest 200
+      // We can do this safely by keeping the latest 200 IDs
+      await db.query(
+        `
+        DELETE FROM confessions
+        WHERE id IN (
+          SELECT id FROM confessions 
+          WHERE board_id = $1 
+          ORDER BY created_at DESC 
+          OFFSET 200
+        )
+      `,
+        [boardId],
+      );
 
-    // broadcast only to this board's room
-    io.to(boardId).emit("update_wall", boards[boardId]);
+      // 3. Fetch updated list to broadcast
+      const result = await db.query(
+        "SELECT * FROM confessions WHERE board_id = $1 ORDER BY created_at DESC LIMIT 200",
+        [boardId],
+      );
+
+      const notes = result.rows.map((row) => ({
+        ...row,
+        timestamp: row.created_at,
+      }));
+
+      // Broadcast only to this board's room
+      io.to(boardId).emit("update_wall", notes);
+    } catch (err) {
+      console.error("Error saving confession:", err);
+    }
   });
 
   socket.on("disconnect", () => {
