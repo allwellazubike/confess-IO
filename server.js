@@ -65,6 +65,12 @@ function generateIdentity() {
   return `${adj} ${ani}`;
 }
 
+app.post("/api/get-confess", (req, res) => {
+  
+})
+
+
+
 // API: Generate unique Board ID
 app.get("/api/generate-id", (req, res) => {
   const uniqueId = Math.random().toString(36).substring(2, 9);
@@ -103,14 +109,15 @@ io.on("connection", (socket) => {
     };
 
     boards[boardId].push(note);
-    if (boards[boardId].length > 50) boards[boardId].shift(); // Keep last 50 per board
+    console.log(note);
+    if (boards[boardId].length > 50) boards[boardId].shift(); 
 
-    // Broadcast only to this board's room
+    // broadcast only to this board's room
     io.to(boardId).emit("update_wall", boards[boardId]);
   });
 
   socket.on("disconnect", () => {
-    // Standard disconnect
+    // standard disconnect
   });
 });
 
