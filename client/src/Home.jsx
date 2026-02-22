@@ -27,8 +27,9 @@ const Home = () => {
 
   const createWall = async () => {
     try {
-      // Use full URL for dev since no proxy is set up
-      const res = await fetch("http://localhost:4000/api/generate-id");
+      const backendUrl =
+        import.meta.env.VITE_BACKEND_URL || "https://confessio-be.pxxl.click";
+      const res = await fetch(`${backendUrl}/api/generate-id`);
       const data = await res.json();
       navigate(`/board/${data.id}`);
     } catch (error) {

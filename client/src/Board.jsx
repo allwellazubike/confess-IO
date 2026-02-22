@@ -15,7 +15,9 @@ import {
 import { motion, AnimatePresence } from "framer-motion";
 
 // Connect to the backend
-const socket = io("http://localhost:4000");
+const BACKEND_URL =
+  import.meta.env.VITE_BACKEND_URL || "https://confessio-be.pxxl.click";
+const socket = io(BACKEND_URL);
 
 const avatarGradients = [
   "linear-gradient(135deg, #FF9A9E 0%, #FECFEF 100%)",
