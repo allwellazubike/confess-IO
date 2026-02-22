@@ -71,8 +71,6 @@ const Board = () => {
     setIsModalOpen(false);
   };
 
-  
-
   return (
     <div className="min-h-screen bg-[#0a0a0a] text-[#e8e2d9] font-mono pb-20 selection:bg-[#c0392b] selection:text-white relative">
       {/* Navbar */}
