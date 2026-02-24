@@ -11,6 +11,8 @@ import {
   Send,
   Copy,
   Check,
+  Wifi,
+  WifiOff,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -27,6 +29,19 @@ const avatarGradients = [
   "linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%)",
 ];
 
+// #1 FIX: Derive a stable gradient from the note's id/timestamp
+// so it never re-randomises on re-renders.
+const getStableGradient = (note, index) => {
+  const seed = note.id
+    ? note.id.charCodeAt(0) + note.id.charCodeAt(note.id.length - 1)
+    : note.timestamp
+      ? new Date(note.timestamp).getSeconds()
+      : index;
+  return avatarGradients[seed % avatarGradients.length];
+};
+
+const MAX_CHARS = 300;
+
 const Board = () => {
   const { id } = useParams();
   const [notes, setNotes] = useState([]);
@@ -34,6 +49,7 @@ const Board = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [newNoteText, setNewNoteText] = useState("");
   const [copied, setCopied] = useState(false);
+  const [idCopied, setIdCopied] = useState(false);
 
   useEffect(() => {
     socket.on("connect", () => {
@@ -60,9 +76,16 @@ const Board = () => {
     setTimeout(() => setCopied(false), 2000);
   };
 
+  // #5: Copy wall ID separately
+  const handleCopyId = () => {
+    navigator.clipboard.writeText(id);
+    setIdCopied(true);
+    setTimeout(() => setIdCopied(false), 2000);
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!newNoteText.trim()) return;
+    if (!newNoteText.trim() || newNoteText.length > MAX_CHARS) return;
 
     socket.emit("new_confession", {
       boardId: id,
@@ -72,6 +95,10 @@ const Board = () => {
     setNewNoteText("");
     setIsModalOpen(false);
   };
+
+  const charsLeft = MAX_CHARS - newNoteText.length;
+  const isOverLimit = charsLeft < 0;
+  const isNearLimit = charsLeft <= 40 && !isOverLimit;
 
   return (
     <div className="min-h-screen bg-[#0a0a0a] text-[#e8e2d9] font-mono pb-20 selection:bg-[#c0392b] selection:text-white relative">
@@ -85,7 +112,28 @@ const Board = () => {
             <ArrowLeft size={16} />
             <span className="hidden md:inline">Back</span>
           </Link>
+
+          {/* #5: Wall ID display */}
+          <button
+            onClick={handleCopyId}
+            title="Click to copy wall ID"
+            className="hidden md:flex items-center gap-2 text-[#5a5550] hover:text-[#e8e2d9] transition-colors text-[10px] uppercase tracking-widest border border-[#2a2520] px-3 py-1.5 rounded-full hover:border-[#5a5550]"
+          >
+            {idCopied ? <Check size={10} className="text-green-500" /> : null}
+            WALL · {id}
+          </button>
+
           <div className="flex items-center gap-4">
+            {/* #2: Connection status indicator */}
+            <div
+              className={`hidden md:flex items-center gap-1.5 text-[10px] uppercase tracking-widest ${
+                isConnected ? "text-green-500/70" : "text-[#5a5550]"
+              }`}
+            >
+              {isConnected ? <Wifi size={11} /> : <WifiOff size={11} />}
+              {isConnected ? "Live" : "Connecting…"}
+            </div>
+
             <button
               onClick={handleCopyLink}
               className="flex items-center gap-2 px-4 py-2 rounded-full border border-[#2a2520] hover:bg-[#1a1a1a] transition-all text-xs uppercase tracking-widest"
@@ -123,45 +171,47 @@ const Board = () => {
             </button>
           </div>
         ) : (
+          // #4 FIX: Wrap list in AnimatePresence so new real-time arrivals animate in
           <div className="columns-1 md:columns-2 lg:columns-3 gap-6 space-y-6">
-            {[...notes].reverse().map((note, i) => (
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                key={note.id || i}
-                className="break-inside-avoid bg-[#1a1a1a] rounded-xl p-8 border border-[#2a2520] hover:border-[#c0392b]/30 transition-colors duration-300 relative group"
-              >
-                <div className="flex items-center justify-between mb-6">
-                  <div className="flex items-center gap-3">
-                    <div
-                      className="w-8 h-8 rounded-full flex items-center justify-center text-white text-[10px] font-bold shadow-inner"
-                      style={{
-                        background:
-                          avatarGradients[
-                            Math.floor(Math.random() * avatarGradients.length)
-                          ],
-                      }}
-                    >
-                      {note.identity ? note.identity.charAt(0) : "?"}
+            <AnimatePresence initial={false}>
+              {[...notes].reverse().map((note, i) => (
+                <motion.div
+                  layout
+                  key={note.id || `note-${i}`}
+                  initial={{ opacity: 0, y: 24, scale: 0.97 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: -10, scale: 0.97 }}
+                  transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+                  className="break-inside-avoid bg-[#1a1a1a] rounded-xl p-8 border border-[#2a2520] hover:border-[#c0392b]/30 transition-colors duration-300 relative group"
+                >
+                  <div className="flex items-center justify-between mb-6">
+                    <div className="flex items-center gap-3">
+                      {/* #1 FIX: stable gradient derived from note id/timestamp */}
+                      <div
+                        className="w-8 h-8 rounded-full flex items-center justify-center text-white text-[10px] font-bold shadow-inner"
+                        style={{ background: getStableGradient(note, i) }}
+                      >
+                        {note.identity ? note.identity.charAt(0) : "?"}
+                      </div>
+                      <span className="font-bold text-xs tracking-widest uppercase text-[#e8e2d9]">
+                        {note.identity || "Anonymous"}
+                      </span>
                     </div>
-                    <span className="font-bold text-xs tracking-widest uppercase text-[#e8e2d9]">
-                      {note.identity || "Anonymous"}
-                    </span>
+                    <div className="flex items-center gap-1 text-[10px] text-[#5a5550] font-medium uppercase tracking-widest">
+                      <Clock size={10} />
+                      {new Date(note.timestamp).toLocaleTimeString([], {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })}
+                    </div>
                   </div>
-                  <div className="flex items-center gap-1 text-[10px] text-[#5a5550] font-medium uppercase tracking-widest">
-                    <Clock size={10} />
-                    {new Date(note.timestamp).toLocaleTimeString([], {
-                      hour: "2-digit",
-                      minute: "2-digit",
-                    })}
-                  </div>
-                </div>
 
-                <p className="text-[#e8e2d9] text-base leading-relaxed font-serif italic">
-                  "{note.text}"
-                </p>
-              </motion.div>
-            ))}
+                  <p className="text-[#e8e2d9] text-base leading-relaxed font-serif italic">
+                    "{note.text}"
+                  </p>
+                </motion.div>
+              ))}
+            </AnimatePresence>
           </div>
         )}
       </main>
@@ -212,13 +262,32 @@ const Board = () => {
                   value={newNoteText}
                   onChange={(e) => setNewNoteText(e.target.value)}
                   placeholder="Type your confession here..."
+                  maxLength={
+                    MAX_CHARS + 20
+                  } /* soft guard, hard check on submit */
                   className="w-full h-40 bg-[#0a0a0a] border border-[#2a2520] rounded-xl p-4 text-[#e8e2d9] placeholder-[#5a5550] focus:outline-none focus:border-[#c0392b] transition-colors resize-none font-serif italic text-lg"
                   autoFocus
                 />
-                <div className="mt-6 flex justify-end">
+
+                {/* #3: Character counter */}
+                <div className="mt-2 flex justify-between items-center">
+                  <span
+                    className={`text-[10px] uppercase tracking-widest transition-colors ${
+                      isOverLimit
+                        ? "text-[#c0392b]"
+                        : isNearLimit
+                          ? "text-amber-500/80"
+                          : "text-[#5a5550]"
+                    }`}
+                  >
+                    {isOverLimit
+                      ? `${Math.abs(charsLeft)} over limit`
+                      : `${charsLeft} remaining`}
+                  </span>
+
                   <button
                     type="submit"
-                    disabled={!newNoteText.trim()}
+                    disabled={!newNoteText.trim() || isOverLimit}
                     className="flex items-center gap-2 bg-[#c0392b] text-white px-6 py-3 rounded-full font-bold uppercase tracking-widest text-xs hover:bg-[#a93226] disabled:opacity-50 disabled:cursor-not-allowed transition-all"
                   >
                     <Send size={14} />

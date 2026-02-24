@@ -35,10 +35,16 @@ body {
   background: var(--obsidian);
   color: var(--bone);
   font-family: "DM Mono", monospace;
-  cursor: none; /* Custom cursor takes over */
   overflow-x: hidden;
   margin: 0;
   min-height: 100vh;
+}
+
+/* #7 FIX: only hide cursor on real pointer devices (not touch/mobile) */
+@media (pointer: fine) {
+  body {
+    cursor: none;
+  }
 }
 
 /* ── CUSTOM CURSOR ── */
@@ -363,10 +369,15 @@ body {
   color: var(--red-dim);
   margin-bottom: 2rem;
 }
+/* #10 FIX: SVG icons — use color instead of emoji font-size/grayscale */
 .feature-icon {
-  font-size: 2rem;
   margin-bottom: 1.5rem;
-  filter: grayscale(0.3);
+  color: var(--red);
+  opacity: 0.85;
+  transition: opacity 0.3s;
+}
+.feature:hover .feature-icon {
+  opacity: 1;
 }
 .feature-title {
   font-family: "Playfair Display", serif;

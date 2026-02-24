@@ -18,6 +18,7 @@ const CONFESSIONS = [
 const Home = () => {
   const navigate = useNavigate();
   const heroRef = useRef(null);
+  const featuresRef = useRef(null); // #6: ref for scroll target
   const [confessionIdx, setConfessionIdx] = useState(0);
   const [cursorPos, setCursorPos] = useState({ x: -100, y: -100 });
 
@@ -135,20 +136,29 @@ const Home = () => {
             <button className="btn-primary" onClick={createWall}>
               Create Your Wall →
             </button>
-            <button className="btn-secondary">How it works</button>
+            {/* #6 FIX: scroll to features section */}
+            <button
+              className="btn-secondary"
+              onClick={() =>
+                featuresRef.current?.scrollIntoView({ behavior: "smooth" })
+              }
+            >
+              How it works
+            </button>
           </motion.div>
 
           {/* Rotating confession ticker */}
           <div className="confession-band">
             <div className="confession-label">Live whispers</div>
             <AnimatePresence mode="wait">
+              {/* #8 FIX: blur fade for more atmospheric feel */}
               <motion.div
                 key={confessionIdx}
                 className="confession-text"
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
-                transition={{ duration: 0.6 }}
+                initial={{ opacity: 0, y: 8, filter: "blur(6px)" }}
+                animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+                exit={{ opacity: 0, y: -8, filter: "blur(6px)" }}
+                transition={{ duration: 0.7, ease: "easeInOut" }}
               >
                 "{CONFESSIONS[confessionIdx]}"
               </motion.div>
@@ -179,7 +189,8 @@ const Home = () => {
 
         {/* ── FEATURES ── */}
         <div className="divider" />
-        <div style={{ maxWidth: 1200, margin: "0 auto" }}>
+        {/* #6: attach ref so "How it works" can scroll here */}
+        <div ref={featuresRef} style={{ maxWidth: 1200, margin: "0 auto" }}>
           <div style={{ padding: "5rem 3rem 2rem" }}>
             <div className="section-label">Why ConfessIO</div>
             <div className="section-title">
