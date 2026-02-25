@@ -32,8 +32,9 @@ const avatarGradients = [
 // #1 FIX: Derive a stable gradient from the note's id/timestamp
 // so it never re-randomises on re-renders.
 const getStableGradient = (note, index) => {
-  const seed = note.id
-    ? note.id.charCodeAt(0) + note.id.charCodeAt(note.id.length - 1)
+  const strId = note.id != null ? String(note.id) : null;
+  const seed = strId
+    ? strId.charCodeAt(0) + strId.charCodeAt(strId.length - 1)
     : note.timestamp
       ? new Date(note.timestamp).getSeconds()
       : index;
