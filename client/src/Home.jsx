@@ -15,12 +15,38 @@ const CONFESSIONS = [
   "I pretend to be fine. I'm not fine.",
 ];
 
+const FAQS = [
+  {
+    q: "Is it really anonymous?",
+    a: "Yes. We store zero identity data — no IP addresses, no accounts, no cookies tied to you. The sender is architecturally invisible to us and to the wall owner.",
+  },
+  {
+    q: "Can I delete my wall or a confession?",
+    a: "Currently walls are persistent for the session. Moderation controls and self-delete are on our roadmap. If you need something removed urgently, contact us.",
+  },
+  {
+    q: "How long are confessions stored?",
+    a: "Confessions live as long as their wall exists. We don't auto-expire messages, but we reserve the right to purge inactive walls after 90 days of zero activity.",
+  },
+  {
+    q: "Is ConfessIO free?",
+    a: "Completely. No sign-up, no subscription, no ads. Create a wall in one click and share it instantly.",
+  },
+];
+
 const Home = () => {
   const navigate = useNavigate();
   const heroRef = useRef(null);
-  const featuresRef = useRef(null); // #6: ref for scroll target
+  const featuresRef = useRef(null);
   const [confessionIdx, setConfessionIdx] = useState(0);
   const [cursorPos, setCursorPos] = useState({ x: -100, y: -100 });
+
+  // Wall search state
+  const [searchId, setSearchId] = useState("");
+  const [searchError, setSearchError] = useState(false);
+
+  // FAQ open state — tracks which index is open (null = all closed)
+  const [openFaq, setOpenFaq] = useState(null);
 
   const { scrollY } = useScroll();
   const heroOpacity = useTransform(scrollY, [0, 400], [1, 0]);
@@ -33,11 +59,22 @@ const Home = () => {
       const res = await fetch(`${backendUrl}/api/generate-id`);
       const data = await res.json();
       navigate(`/board/${data.id}`);
-    } catch (error) {
-      console.error("Failed to generate ID", error);
+    } catch {
+      // Silent fallback — generate a local ID if the backend is unreachable
       const uniqueId = Math.random().toString(36).substring(2, 9);
       navigate(`/board/${uniqueId}`);
     }
+  };
+
+  const handleSearch = (e) => {
+    e.preventDefault();
+    const trimmed = searchId.trim();
+    if (!trimmed) {
+      setSearchError(true);
+      setTimeout(() => setSearchError(false), 1800);
+      return;
+    }
+    navigate(`/board/${trimmed}`);
   };
 
   // Cycle confessions
@@ -136,7 +173,6 @@ const Home = () => {
             <button className="btn-primary" onClick={createWall}>
               Create Your Wall →
             </button>
-            {/* #6 FIX: scroll to features section */}
             <button
               className="btn-secondary"
               onClick={() =>
@@ -151,7 +187,6 @@ const Home = () => {
           <div className="confession-band">
             <div className="confession-label">Live whispers</div>
             <AnimatePresence mode="wait">
-              {/* #8 FIX: blur fade for more atmospheric feel */}
               <motion.div
                 key={confessionIdx}
                 className="confession-text"
@@ -187,9 +222,47 @@ const Home = () => {
           ))}
         </motion.div>
 
+        {/* ── FIND A WALL ── */}
+        <div className="divider" />
+        <motion.div
+          className="find-wall"
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+        >
+          <div className="section-label">Find a Wall</div>
+          <p className="find-wall-sub">
+            Already have a wall ID? Jump straight in.
+          </p>
+          <form className="find-wall-form" onSubmit={handleSearch}>
+            <input
+              type="text"
+              value={searchId}
+              onChange={(e) => setSearchId(e.target.value)}
+              placeholder="Paste wall ID here…"
+              className={`find-wall-input${searchError ? " find-wall-input--error" : ""}`}
+              spellCheck={false}
+              autoComplete="off"
+            />
+            <button type="submit" className="find-wall-btn">
+              Go to Wall →
+            </button>
+          </form>
+          {searchError && (
+            <motion.p
+              className="find-wall-error"
+              initial={{ opacity: 0, y: -6 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0 }}
+            >
+              Please enter a wall ID first.
+            </motion.p>
+          )}
+        </motion.div>
+
         {/* ── FEATURES ── */}
         <div className="divider" />
-        {/* #6: attach ref so "How it works" can scroll here */}
         <div ref={featuresRef} style={{ maxWidth: 1200, margin: "0 auto" }}>
           <div style={{ padding: "5rem 3rem 2rem" }}>
             <div className="section-label">Why ConfessIO</div>
@@ -318,6 +391,70 @@ const Home = () => {
           </motion.div>
         </div>
 
+        {/* ── HOW IT WORKS ── */}
+        <div className="divider" />
+        <motion.div
+          className="how-it-works"
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true, margin: "-80px" }}
+          transition={{ duration: 0.6 }}
+        >
+          <div style={{ padding: "5rem 3rem 2rem" }}>
+            <div className="section-label">How It Works</div>
+            <div className="section-title">
+              Three steps.
+              <br />
+              <em
+                style={{
+                  fontFamily: "'Playfair Display', serif",
+                  fontStyle: "italic",
+                  color: "var(--red)",
+                }}
+              >
+                Infinite truths.
+              </em>
+            </div>
+          </div>
+
+          <div className="steps">
+            {[
+              {
+                num: "01",
+                title: "Create Your Wall",
+                desc: "One click. No account. No email. We generate a unique wall ID for you instantly — completely free.",
+              },
+              {
+                num: "02",
+                title: "Share the Link",
+                desc: "Copy your wall's link and send it to anyone — friends, followers, coworkers, strangers. The link is your wall.",
+              },
+              {
+                num: "03",
+                title: "Receive the Truth",
+                desc: "Confessions arrive in real time. No sender info. No identity. Just raw, unfiltered honesty delivered to your wall.",
+              },
+            ].map((step, i) => (
+              <motion.div
+                key={step.num}
+                className="step"
+                initial={{ opacity: 0, y: 40 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{
+                  duration: 0.7,
+                  delay: i * 0.15,
+                  ease: [0.16, 1, 0.3, 1],
+                }}
+              >
+                <div className="step-num">{step.num}</div>
+                <div className="step-title">{step.title}</div>
+                <p className="step-desc">{step.desc}</p>
+              </motion.div>
+            ))}
+          </div>
+        </motion.div>
+
         {/* ── CTA BLOCK ── */}
         <div className="divider" />
         <motion.section
@@ -345,7 +482,51 @@ const Home = () => {
           </div>
         </motion.section>
 
+        {/* ── FAQ ── */}
+        <div className="divider" />
+        <motion.div
+          className="faq"
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.7 }}
+        >
+          <div className="section-label">FAQ</div>
+          <div className="faq-list">
+            {FAQS.map((item, i) => (
+              <div key={i} className="faq-item">
+                <button
+                  className="faq-question"
+                  onClick={() => setOpenFaq(openFaq === i ? null : i)}
+                  aria-expanded={openFaq === i}
+                >
+                  <span>{item.q}</span>
+                  <span
+                    className={`faq-chevron${openFaq === i ? " faq-chevron--open" : ""}`}
+                  >
+                    ↓
+                  </span>
+                </button>
+                <AnimatePresence initial={false}>
+                  {openFaq === i && (
+                    <motion.div
+                      className="faq-answer"
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: "auto", opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      transition={{ duration: 0.35, ease: "easeInOut" }}
+                    >
+                      <p>{item.a}</p>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+            ))}
+          </div>
+        </motion.div>
+
         {/* ── FOOTER ── */}
+        <div className="divider" />
         <footer className="footer">
           <div className="footer-logo">ConfessIO</div>
           <div className="footer-copy">
