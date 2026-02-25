@@ -470,12 +470,11 @@ body {
 /* FOOTER */
 .footer {
   border-top: 1px solid var(--border);
-  padding: 2.5rem 3rem;
-  display: flex;
+  padding: 3rem;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
   align-items: center;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 1rem;
+  gap: 2rem;
 }
 .footer-logo {
   font-family: "Playfair Display", serif;
@@ -483,10 +482,31 @@ body {
   font-weight: 700;
   color: var(--muted);
 }
+.footer-contact {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.footer-link {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.65rem;
+  letter-spacing: 0.1em;
+  color: var(--muted);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+.footer-link:hover {
+  color: var(--red);
+}
 .footer-copy {
   font-size: 0.65rem;
   letter-spacing: 0.15em;
   color: var(--muted);
+  text-align: right;
 }
 
 /* ── FIND A WALL ── */
@@ -683,7 +703,14 @@ body {
     border-bottom: 1px solid var(--border);
   }
   .footer {
-    flex-direction: column;
+    grid-template-columns: 1fr;
+    text-align: center;
+    padding: 2.5rem 1.5rem;
+  }
+  .footer-contact {
+    gap: 1rem;
+  }
+  .footer-copy {
     text-align: center;
   }
 

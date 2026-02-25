@@ -529,6 +529,57 @@ const Home = () => {
         <div className="divider" />
         <footer className="footer">
           <div className="footer-logo">ConfessIO</div>
+
+          <div className="footer-contact">
+            <a href="mailto:allwellazubike@gmail.com" className="footer-link">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                width="13"
+                height="13"
+              >
+                <rect x="2" y="4" width="20" height="16" rx="2" />
+                <path d="m2 7 10 7 10-7" />
+              </svg>
+              allwellazubike@gmail.com
+            </a>
+            <a href="tel:+2348161414964" className="footer-link">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                width="13"
+                height="13"
+              >
+                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.64 1.27h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.91a16 16 0 0 0 6 6l.91-.91a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 21.73 16.92z" />
+              </svg>
+              +234 816 141 4964
+            </a>
+            <a
+              href="https://x.com/Faya_lordd"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="footer-link"
+            >
+              <svg
+                viewBox="0 0 24 24"
+                fill="currentColor"
+                width="13"
+                height="13"
+              >
+                <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.746l7.73-8.835L1.254 2.25H8.08l4.259 5.63 5.905-5.63zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+              </svg>
+              @Faya_lordd
+            </a>
+          </div>
+
           <div className="footer-copy">
             © {new Date().getFullYear()} — Anonymous. Always.
           </div>
