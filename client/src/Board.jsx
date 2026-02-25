@@ -45,6 +45,7 @@ const MAX_CHARS = 300;
 const Board = () => {
   const { id } = useParams();
   const [notes, setNotes] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [isConnected, setIsConnected] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [newNoteText, setNewNoteText] = useState("");
@@ -58,7 +59,10 @@ const Board = () => {
     });
 
     socket.on("disconnect", () => setIsConnected(false));
-    socket.on("init_wall", (initialNotes) => setNotes(initialNotes));
+    socket.on("init_wall", (initialNotes) => {
+      setNotes(initialNotes);
+      setIsLoading(false); // DB has responded — safe to show real state
+    });
     socket.on("update_wall", (updatedNotes) => setNotes(updatedNotes));
 
     return () => {
@@ -150,7 +154,29 @@ const Board = () => {
       </header>
 
       <main className="max-w-6xl mx-auto px-6 py-12">
-        {notes.length === 0 ? (
+        {isLoading ? (
+          // Pulsing skeleton cards while waiting for Supabase
+          <div className="columns-1 md:columns-2 lg:columns-3 gap-6 space-y-6">
+            {[...Array(6)].map((_, i) => (
+              <div
+                key={i}
+                className="break-inside-avoid bg-[#1a1a1a] rounded-xl p-8 border border-[#2a2520] animate-pulse"
+              >
+                {/* Avatar + name row */}
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="w-8 h-8 rounded-full bg-[#2a2520]" />
+                  <div className="h-2.5 w-24 rounded-full bg-[#2a2520]" />
+                </div>
+                {/* Text lines */}
+                <div className="space-y-3">
+                  <div className="h-2.5 w-full rounded-full bg-[#2a2520]" />
+                  <div className="h-2.5 w-5/6 rounded-full bg-[#2a2520]" />
+                  <div className="h-2.5 w-4/6 rounded-full bg-[#2a2520]" />
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : notes.length === 0 ? (
           <div className="flex flex-col items-center justify-center text-center mt-20">
             <div className="w-24 h-24 bg-[#1a1a1a] rounded-full flex items-center justify-center border border-[#2a2520] mb-6 animate-pulse">
               <MessageSquare className="w-8 h-8 text-[#5a5550]" />
